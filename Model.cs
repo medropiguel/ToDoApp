@@ -82,14 +82,22 @@ namespace ModelTask
             return tasks.Count > 0;
         }
 
-        
+
 
         public void ListTasks()
         {
-            Console.WriteLine($"ID | TITULO | DESCRIÇÃO | STATUS | DATA DE INÍCIO | DATA DE CONCLUSÃO");
-            for (int i = 0; i < tasks.Count; i++)
+
+            if (tasks.Count > 0)
             {
-                Console.WriteLine($"{tasks[i].Id}|{tasks[i].Title}|{tasks[i].Description}|{tasks[i].Status}|{tasks[i].StartDate}|{tasks[i].FinishDate}");
+                Console.WriteLine($"ID | TITULO | DESCRIÇÃO | STATUS | DATA DE INÍCIO | DATA DE CONCLUSÃO");
+                for (int i = 0; i < tasks.Count; i++)
+                {
+                    Console.WriteLine($"{tasks[i].Id}|{tasks[i].Title}|{tasks[i].Description}|{tasks[i].Status}|{tasks[i].StartDate}|{tasks[i].FinishDate}");
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("Não existem tarefas cadastradas.");
             }
         }
 
