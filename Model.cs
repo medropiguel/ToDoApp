@@ -81,12 +81,29 @@ namespace ModelTask
                                     DateTime.Parse(parts[4]),
                                     string.IsNullOrWhiteSpace(parts[5]) ? (DateTime?)null : DateTime.Parse(parts[5])
                                     ));
-
                 }
             }
+            tasks = tasks.OrderBy(task => task.Id).ToList();
             return tasks.Count > 0;
         }
+        public void UpdateFile()
+        {
+            string text = "";
+            for (int i = 0; i < tasks.Count; i++)
+            {
+                text += tasks[i].Id.ToString() + ";" +
+                        tasks[i].Title.ToString() + ";" +
+                        tasks[i].Description.ToString() + ";" +
+                        tasks[i].Status.ToString() + ";" +
+                        tasks[i].StartDate.ToString() + ";" +
+                        (tasks[i].FinishDate.HasValue ? tasks[i].FinishDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "") + ";\n"
+                        ;
+                
+            }
+            File.WriteAllText("./tasks.csv", text);
+            
 
+        }
 
 
         public int ListTasks()
@@ -99,13 +116,15 @@ namespace ModelTask
                 Console.WriteLine($"ID | TITLE | DESCRPTION | STATUS | START DATE | FINISH DATE");
                 for (int i = 0; i < tasks.Count; i++)
                 {
-                    Console.WriteLine($"{tasks[i].Id}|{tasks[i].Title}|{tasks[i].Description}|{tasks[i].Status}|{tasks[i].StartDate}|{tasks[i].FinishDate}");
+                    if (tasks[i].Status != "COMPLETED") {
+                        Console.WriteLine($"{tasks[i].Id} | {tasks[i].Title} | {tasks[i].Description} | {tasks[i].Status} | {tasks[i].StartDate:yyyy-MM-dd HH:mm} | {(tasks[i].FinishDate.HasValue ? tasks[i].FinishDate.Value.ToString("yyyy-MM-dd HH:mm") : "")}");
+                    }
                 }
 
             }
             else
             {
-                System.Console.WriteLine("There are no tasks registered.");
+                System.Console.WriteLine("THERE ARE NO TASKS REGISTERED.");
 
             }
             while (true)
@@ -129,13 +148,13 @@ namespace ModelTask
                     else
                     {
                         Console.Clear();
-                        System.Console.WriteLine("Choose a number from the options above.");
+                        System.Console.WriteLine("CHOOSE A NUMBER FROM THE OPTIONS ABOVE");
                     }
                 }
                 catch (FormatException)
                 {
                     Console.Clear();
-                    System.Console.WriteLine("Type a whole number between the options above.");
+                    System.Console.WriteLine("TYPE A WHOLE NUMBER BETWEEN THE OPTIONS ABOVE.");
                 }
 
             }
@@ -152,13 +171,24 @@ namespace ModelTask
                     break;
                 }
             }
+
+            UpdateFile();
         }
+
         public void AddTask(string title, string description)
         {
             int newId = GenerateNewId();
             var newTask = new TaskItem(newId, title, description, "IN PROGRESS", DateTime.Now, null);
             tasks.Add(newTask);
+            string text = newTask.Id.ToString() + ";" +
+                            newTask.Title + ";" +
+                            newTask.Description + ";" +
+                            newTask.Status + ";" +
+                            newTask.StartDate.ToString("yyyy-MM-dd HH:mm:ss") + ";" +
+                            ";\n";
+            File.AppendAllText("./tasks.csv", text);
         }
+
 
         public void CompleteTask(int id)
         {
@@ -177,6 +207,7 @@ namespace ModelTask
             else
             {
                 tasks[index].CompleteTask();
+                UpdateFile();
             }
         }
 
